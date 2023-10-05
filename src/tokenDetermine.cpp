@@ -10,7 +10,7 @@ static bool isIDChar(char testChar) {
     return true;
   }
 
-  const char otherChars[] = {'_', '-'};
+  const char otherChars[] = {'_'};
 
   // True if char is one of predfined chars
   for (char c : otherChars) {
@@ -88,8 +88,8 @@ static int isOpp(string str, int startingIndex) {
   }
 
   const char oppChars[] = {'+', '-', '=', '<', '>', '/', '*', '&', '|'};
-  const int COMBO_AMOUNT = 6;
-  const char combos[COMBO_AMOUNT][2] = {{'>', '='}, {'<', '='}, {'+', '='}, {'-', '='}, {'*', '='}, {'/', '='}};
+  const int COMBO_AMOUNT = 9;
+  const char combos[COMBO_AMOUNT][2] = {{'>', '='}, {'<', '='}, {'+', '='}, {'-', '='}, {'*', '='}, {'/', '='}, {'+', '+'}, {'-', '-'}, {'=', '='}};
 
   // Checks if the char is an opp char
   for (char c : oppChars) {
@@ -108,6 +108,18 @@ static int isOpp(string str, int startingIndex) {
 
   return 0;
 }
+
+
+static bool isKeyWord(string str) {
+  const string keywords[] = {"if", "for", "else", "while", "class", "main", "public", "private", "int", "bool", "char", "double"};
+
+  if (std::find(std::begin(keywords), std::end(keywords), str) != std::end(keywords)) {
+    return true;
+  }
+
+  return false;
+}
+
 
 static int isSyn(string str, int startingIndex) {
   const char synChars[] = {'(', ')', '{', '}', '[', ']', '\"', '\'', ',', '.', ';'};

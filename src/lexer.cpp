@@ -48,32 +48,32 @@ void lexLine(string line) {
 
     // Syntax is a single char and activates any time a syntax char shows up
     else if ((synLen = isSyn(line, i)) != 0) {
-      std::string tempSynStr = "";
-      tempSynStr += line[i];
-      sendToken("SYN", tempSynStr);
+      sendToken("SYN", line.substr(i, synLen));
+      i += synLen - 1;
     }
 
     // IDs can contain letters, "_"s, "-"s, and digits
     // Must contain at least one non number char
     else if ((idLen = isID(line, i)) != 0) {
+      string text = line.substr(i, idLen);
+      if (isKeyWord(text)) {
+        sendToken("KEYW", text);
+      } else {
+        sendToken("ID  ", text);
+      }
       i += idLen - 1;
-
-      sendToken("ID  ", line.substr(i, idLen));
     }
 
     // Numbers contain only digits and can not be touching an ID specified char
     else if ((numLen = isNum(line, i)) != 0) {
-      i += numLen - 1;
-
       sendToken("NUM ", line.substr(i, numLen));
+      i += numLen - 1;
     }
 
     //Operations are 1 or 2 chars and activate any time they appear
     else if ((oppLen = isOpp(line, i)) != 0) {
-
-      i += oppLen - 1;
-
       sendToken("OPP ", line.substr(i, oppLen));
+      i += oppLen - 1;
     }
 
     // Sends an unknown token when no other token types are found
@@ -92,6 +92,11 @@ void lexLine(string line) {
 std::vector<Token> lexFile(string fileName) {
   std::fstream file;
   file.open(fileName, std::ios::in);
+  if (file.is_open()) {
+    std::cout << "Found file: " << fileName << "\n";
+  } else {
+    std::cout << "ERROR; File " << fileName << "not found \n";
+  }
 
   std::string line;
 
@@ -100,6 +105,12 @@ std::vector<Token> lexFile(string fileName) {
     lexLine(line);
   }
 
+  if (tokens.size() == 0) {
+    std::cout << "No Tokens read\n\n";
+  }
+
+  sendToken("ENDL", "");
+  
   std::cout << "TOKENS: \n\n";
 
   // Prints out the token info
