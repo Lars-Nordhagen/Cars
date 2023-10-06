@@ -1,4 +1,5 @@
 #include <string>
+#include <unordered_set>
 #include <iostream>
 
 using std::string;
@@ -110,10 +111,9 @@ static int isOpp(string str, int startingIndex) {
 }
 
 
-static bool isKeyWord(string str) {
-  const string keywords[] = {"if", "for", "else", "while", "class", "main", "public", "private", "int", "bool", "char", "double"};
+static bool isKeyWord(string str, std::unordered_set<string> keywordSet) {
 
-  if (std::find(std::begin(keywords), std::end(keywords), str) != std::end(keywords)) {
+  if (keywordSet.find(str) != keywordSet.end()) {
     return true;
   }
 

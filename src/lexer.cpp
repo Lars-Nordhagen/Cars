@@ -3,10 +3,12 @@
 
 #include <fstream>
 #include <string>
+#include <unordered_set>
 #include <iostream>
 #include <vector>
 
 std::vector<Token> tokens = {};
+std::unordered_set<string> keywords;
 
 // Adds a token to the list
 void sendToken(std::string type, std::string text) {
@@ -56,7 +58,7 @@ void lexLine(string line) {
     // Must contain at least one non number char
     else if ((idLen = isID(line, i)) != 0) {
       string text = line.substr(i, idLen);
-      if (isKeyWord(text)) {
+      if (isKeyWord(text, keywords)) {
         sendToken("KEYW", text);
       } else {
         sendToken("ID  ", text);
@@ -99,6 +101,7 @@ std::vector<Token> lexFile(string fileName) {
   }
 
   std::string line;
+  keywords = {"for", "if", "else", "while", "int", "bool", "double", "char"};
 
   // Lexes each line
   while (std::getline(file, line)) {
