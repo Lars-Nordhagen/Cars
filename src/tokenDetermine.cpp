@@ -119,6 +119,13 @@ static bool isKeyWord(string str, std::unordered_set<string> keywordSet) {
 
   return false;
 }
+static bool isClass(string str, std::unordered_set<string> classSet) {
+  if (classSet.find(str) != classSet.end()) {
+    return true;
+  }
+
+  return false;
+}
 
 
 static int isSyn(string str, int startingIndex) {
