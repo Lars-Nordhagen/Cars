@@ -1,0 +1,26 @@
+include "file2.ca"
+package "start" // start package contains System class
+
+class Main, Class1
+
+class Main
+  
+  Class1 obj = new Ob2()
+  obj.do();
+  System.print(obj.number)
+!
+
+class Class1
+  
+  int number
+
+  cons Ob2 ()
+    number = 2
+  !
+
+  func do
+    if id > (id + id)
+      number = 3
+    !
+  !
+!

@@ -127,16 +127,46 @@ static bool isClass(string str, std::unordered_set<string> classSet) {
   return false;
 }
 
-
-static int isSyn(string str, int startingIndex) {
-  const char synChars[] = {'(', ')', '{', '}', '[', ']', '\"', '\'', ',', '.', ';'};
+static string isSyn(char cha, char nextCha) {
+  const char openChars[] = {'(', '{', '['};
+  const char closeChars[] = {')', '}', ']'};
 
   // Checks if the char is a syntax char
-  for (char c : synChars) {
-    if (str[startingIndex] == c) {
-      return 1;
+  for (char c : openChars) {
+    if (cha == c) {
+      return "OPPE";
     }
   }
+  for (char c : closeChars) {
+    if (cha == c) {
+      return "CLOS";
+    }
+  }
+  if (cha == '.') {
+    return "DOT ";
+  }
+  if (cha == ',') {
+    return "COMM";
+  }
+  if (cha == '=' && nextCha != '=') {
+    return "EQUA";
+  }
 
-  return 0;
+  return "";
+}
+
+static int isQuo(string line, int startingIndex) {
+  if (line[startingIndex] != '"') {
+    return 0;
+  }
+  
+  int ct = 0;
+  for (int i = startingIndex + 1; i < line.length(); i++) {
+    if (line[i] != '"') {
+      ct++;
+    } else {
+      break;
+    }
+  }
+  return ct + 2;
 }

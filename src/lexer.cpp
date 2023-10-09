@@ -18,7 +18,7 @@ void sendToken(std::string type, std::string text) {
 }
 
 void lexLine(string line) {
-
+  line += " "; // Avoid index errors if at end of line
   // Checks if the line is blank or if it is an end line
   bool blankLine = true;
   for (char c : line) {
@@ -42,17 +42,25 @@ void lexLine(string line) {
   // May skip over chars if they are part of a multi-char token
   int lineLength = line.length();
   for (int i = 0; i < lineLength; i++) {
-    int synLen, numLen, oppLen, idLen;
+    int numLen, oppLen, idLen, quoLen;
+    string synTyp;
+    char currChar = line[i];
 
     // Checks if the char is blank
-    if (line[i] == ' ') {
+    if (currChar == ' ') {
 
+    }
+    else if (currChar == '/' && line[i+1] == '/') {
+      return;
+    }
+    else if ((quoLen = isQuo(line, i)) != 0) {
+      sendToken("QUO ", line.substr(i, quoLen));
+      i += quoLen - 1;
     }
 
     // Syntax is a single char and activates any time a syntax char shows up
-    else if ((synLen = isSyn(line, i)) != 0) {
-      sendToken("SYN", line.substr(i, synLen));
-      i += synLen - 1;
+    else if ((synTyp = isSyn(line[i], line[i+1])) != "") {
+      sendToken(synTyp, line.substr(i, 1));
     }
 
     // IDs can contain letters, "_"s, "-"s, and digits
@@ -104,8 +112,8 @@ std::vector<Token> lexFile(string fileName) {
   }
 
   std::string line;
-  keywords = {"for", "if", "else", "while", "func", "class", "include", "new", "cons"};
-  classes = {"main", "int", "bool", "double", "char", "class1", "class2", "class3"};
+  keywords = {"for", "if", "else", "while", "func", "class", "include", "new", "cons", "package"};
+  classes = {"Main", "int", "bool", "double", "char", "Class1", "Class2", "Class3"};
 
   // Lexes each line
   while (std::getline(file, line)) {

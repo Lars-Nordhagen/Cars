@@ -10,7 +10,7 @@ int main() {
   
   std::vector<Token> tokens;
 
-  tokens = lexFile("./Test2.txt");
+  tokens = lexFile("./main.ca");
 
   return 0;
 }
