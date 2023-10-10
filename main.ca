@@ -3,6 +3,8 @@ package "start" // start package contains System class
 
 class Main, Class1
 
+body
+
 class Main
   
   Class1 obj = new Ob2()
