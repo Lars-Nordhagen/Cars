@@ -1,4 +1,5 @@
 #include "./lexer.cpp"
+#include "./parser.cpp"
 
 #include <iostream>
 #include <fstream>
@@ -11,6 +12,7 @@ int main() {
   std::vector<Token> tokens;
 
   tokens = lexFile("./main.ca");
+  parseTokens(tokens); 
 
   return 0;
 }

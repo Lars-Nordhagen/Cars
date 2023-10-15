@@ -1,3 +1,6 @@
+#ifndef TOKEN_H
+#define TOKEN_H
+
 #include <string>
 using std::string;
 
@@ -22,3 +25,5 @@ private:
   string type;
   string text;
 };
+
+#endif // TOKEN_H

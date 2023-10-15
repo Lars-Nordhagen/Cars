@@ -1,3 +1,14 @@
+class Main
+  var = 3
+  var2 = "hi"
+  var3 = 43294
+!
+
+class Class1
+  var = 999
+  var = "999"
+!
+
 include "file2.ca"
 package "start" // start package contains System class
 
@@ -6,7 +17,8 @@ class Main, Class1
 body
 
 class Main
-  
+!
+class Main  
   Class1 obj = new Ob2()
   obj.do();
   System.print(obj.number)
