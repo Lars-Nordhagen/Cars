@@ -9,6 +9,8 @@ class Class1
   var = "999"
 !
 
++= > >= *= 5 ++ *
+
 include "file2.ca"
 package "start" // start package contains System class
 

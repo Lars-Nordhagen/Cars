@@ -1,3 +1,5 @@
+#include "../h/Constants.h"
+
 #include <string>
 #include <unordered_set>
 #include <iostream>
@@ -88,33 +90,26 @@ static int isOpp(string str, int startingIndex) {
     nextChar = str[startingIndex + 1];
   }
 
-  const char oppChars[] = {'+', '-', '=', '<', '>', '/', '*', '&', '|'};
-  const int COMBO_AMOUNT = 9;
-  const char combos[COMBO_AMOUNT][2] = {{'>', '='}, {'<', '='}, {'+', '='}, {'-', '='}, {'*', '='}, {'/', '='}, {'+', '+'}, {'-', '-'}, {'=', '='}};
+  bool shortMatch = false;
 
-  // Checks if the char is an opp char
-  for (char c : oppChars) {
-    if (testChar == c) {
-      // Checks if the char is part of a combo
-      for (int i = 0; i < COMBO_AMOUNT; i++) {
-        if (testChar == combos[i][0] && nextChar == combos[i][1]) {
-          return 2;
-        }
+  for (int i = 0; i < std::size(SYN::OPP_ARR); i++) {
+    if (SYN::OPP_ARR[i][0] == testChar) {
+      std::cout << SYN::OPP_ARR[i]<< SYN::OPP_ARR[i].length() << nextChar << "\n";
+
+      if (SYN::OPP_ARR[i].length() > 1 && SYN::OPP_ARR[i][1] == nextChar) {
+        return 2;
       }
-
-      // Says the opp is 1 char long if not a combo
-      return 1;
+      shortMatch = true;
     }
   }
-
-  return 0;
+  return shortMatch;
 }
 
-
 static bool isKeyWord(string str, std::unordered_set<string> keywordSet) {
-
-  if (keywordSet.find(str) != keywordSet.end()) {
-    return true;
+  for (int i = 0; i < std::size(KW::KW_ARR); i++) {
+    if (str == KW::KW_ARR[i]) {
+      return true;
+    }
   }
 
   return false;
@@ -128,28 +123,21 @@ static bool isClass(string str, std::unordered_set<string> classSet) {
 }
 
 static string isSyn(char cha, char nextCha) {
-  const char openChars[] = {'(', '{', '['};
-  const char closeChars[] = {')', '}', ']'};
-
   // Checks if the char is a syntax char
-  for (char c : openChars) {
-    if (cha == c) {
-      return "OPPE";
-    }
+  if (cha == SYN::OPEN[0]) {
+    return types::OPEN;
   }
-  for (char c : closeChars) {
-    if (cha == c) {
-      return "CLOS";
-    }
+  if (cha == SYN::CLOSE[0]) {
+    return types::CLOSE;
   }
-  if (cha == '.') {
-    return "DOT ";
+  if (cha == SYN::DOT[0]) {
+    return types::DOT;
   }
-  if (cha == ',') {
-    return "COMM";
+  if (cha == SYN::COMMA[0]) {
+    return types::COMMA;
   }
-  if (cha == '=' && nextCha != '=') {
-    return "EQUA";
+  if (cha == SYN::SET[0] && nextCha != SYN::SET[0]) {
+    return types::EQUAL;
   }
 
   return "";

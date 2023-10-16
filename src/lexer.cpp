@@ -28,7 +28,7 @@ void lexLine(string line) {
 
     // Checks if the line is a function terminator
     if (c == '!') {
-      sendToken("FUNE", "");
+      sendToken(types::FUNE, "");
       return;
     }
   }
@@ -54,7 +54,7 @@ void lexLine(string line) {
       return;
     }
     else if ((quoLen = isQuo(line, i)) != 0) {
-      sendToken("QUO ", line.substr(i, quoLen));
+      sendToken(types::QUOTE, line.substr(i, quoLen));
       i += quoLen - 1;
     }
 
@@ -68,37 +68,37 @@ void lexLine(string line) {
     else if ((idLen = isID(line, i)) != 0) {
       string text = line.substr(i, idLen);
       if (isKeyWord(text, keywords)) {
-        sendToken("KEYW", text);
+        sendToken(types::KEYW, text);
       } else if (isClass(text, classes)) {
-        sendToken("CLSS", text);
+        sendToken(types::CLASS, text);
       } else {
-        sendToken("ID  ", text);
+        sendToken(types::ID, text);
       }
       i += idLen - 1;
     }
 
     // Numbers contain only digits and can not be touching an ID specified char
     else if ((numLen = isNum(line, i)) != 0) {
-      sendToken("NUM ", line.substr(i, numLen));
+      sendToken(types::NUMBER, line.substr(i, numLen));
       i += numLen - 1;
     }
 
     //Operations are 1 or 2 chars and activate any time they appear
     else if ((oppLen = isOpp(line, i)) != 0) {
-      sendToken("OPP ", line.substr(i, oppLen));
+      sendToken(types::OPP, line.substr(i, oppLen));
       i += oppLen - 1;
     }
 
     // Sends an unknown token when no other token types are found
     else {
-      sendToken("UNK", std::string(1, line[i]));
+      sendToken(types::UNKNOWN, std::string(1, line[i]));
     }
   }
 
   //----End of For Loop----//
   
   //line is over
-  sendToken("ENDL", "");
+  sendToken(types::ENDL, "");
 }
 
 
@@ -112,7 +112,7 @@ std::vector<Token> lexFile(string fileName) {
   }
 
   std::string line;
-  keywords = {"for", "if", "else", "while", "func", "class", "include", "new", "cons", "package"};
+  keywords = {KW::FOR, KW::IF, KW::ELSE, KW::WHILE, KW::ELSE, KW::CLASS, KW::INCLUDE, KW::NEW, KW::CONST, KW::PACKAGE};
   classes = {"Main", "int", "bool", "double", "char", "Class1", "Class2", "Class3"};
 
   // Lexes each line
@@ -124,7 +124,7 @@ std::vector<Token> lexFile(string fileName) {
     std::cout << "No Tokens read\n\n";
   }
 
-  sendToken("ENDL", "");
+  sendToken(types::ENDL, "");
   
   std::cout << "TOKENS: \n\n";
 
