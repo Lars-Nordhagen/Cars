@@ -11,7 +11,7 @@ int current = 0;
 
 
 bool Parse_Class();
-bool Parse_Value();
+bool Parse_Value(ParseNode*);
 bool Parse_Value1();
 bool Parse_Value2();
 bool Parse_Value3();
@@ -81,13 +81,13 @@ bool Parse_Value4_1() {
 
 bool Parse_Value4_2() {
   bool yes = (Type(types::OPEN) &&
-              Parse_Value() &&
+              Parse_Value(nullptr) &&
               Type(types::CLOSE));
 
   return yes;
 }
 
-bool Parse_Value4() {
+bool Parse_Value4(){
   int save = current;
 
   bool yes = ((current = save, Parse_Value4_1()) ||
@@ -153,7 +153,7 @@ bool Parse_Value1() {
 
 
 
-bool Parse_Value() {
+bool Parse_Value(ParseNode* parent) {
   int save = current;
 
   bool yes = Parse_Value1();
@@ -164,7 +164,7 @@ bool Parse_Value() {
   yes &= (Type(types::OPP, SYN::AND) ||
           Type(types::OPP, SYN::OR));
   if (!yes) {return true;}
-  yes &= Parse_Value();
+  yes &= Parse_Value(nullptr);
   if (!yes) {current = save;}
   return yes; 
 }
