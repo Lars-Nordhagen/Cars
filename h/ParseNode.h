@@ -85,6 +85,9 @@ public:
   ParseNode* getClassNode() {
     return classNode;
   }
+  NodeList* getList() {
+    return body;
+  }
 
   ParseNode* getLeft() {
     return getClassNode();
@@ -182,6 +185,9 @@ private:
 class Dual_PN : public ParseNode {
 public:
   Dual_PN(){}
+  Dual_PN(string p_text){
+    setText(p_text);
+  }
 
   void setLeft(ParseNode* node) {
     leftNode = node;
@@ -210,6 +216,6 @@ public:
   }
 
 private:
-  ParseNode* leftNode;
-  ParseNode* rightNode;
+  ParseNode* leftNode = nullptr;
+  ParseNode* rightNode = nullptr;
 };
