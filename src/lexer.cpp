@@ -60,7 +60,11 @@ void lexLine(string line) {
 
     // Syntax is a single char and activates any time a syntax char shows up
     else if ((synTyp = isSyn(line[i], line[i+1])) != "") {
-      sendToken(synTyp, line.substr(i, 1));
+      if (synTyp == types::EQUALMOD) {
+        sendToken(synTyp, line.substr(i, 2));
+      } else {
+        sendToken(synTyp, line.substr(i, 1));
+      }
     }
 
     // IDs can contain letters, "_"s, "-"s, and digits

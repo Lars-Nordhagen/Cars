@@ -21,6 +21,7 @@ namespace types {
   const string DOT = "DOT ";
   const string COMMA = "COMM";
   const string EQUAL = "EQUA";
+  const string EQUALMOD = "EQUM";
 
   const string UNKNOWN = "UNKW";
 }
@@ -47,7 +48,7 @@ namespace SYN {
   const string COMMA = ",";
   const string OPEN = "(";
   const string CLOSE = ")";
-  const string SET = "=";
+  
   
   const string PLUS = "+";
   const string MINUS = "-";
@@ -63,6 +64,7 @@ namespace SYN {
   const string LESSE = "<=";
   const string GREAE = ">=";
 
+  const string SET = "=";
   const string PLUSE = "+=";
   const string MINUE = "-=";
   const string TIMEE = "*=";
@@ -70,6 +72,11 @@ namespace SYN {
 
   const string INCR = "++";
   const string DECR = "--";
+
+  // "SET" not included in the array because it is checked before this array is checked
+  // -Could throw error with double equals
+  // Make sure all values here are 2 chars, have to change code otherwise
+  const string SET_ARR[] = {PLUSE, MINUE, TIMEE, DIVIE};
 
   const string OPP_ARR[] = {PLUS, MINUS, TIMES, DIVIDE, AND, OR, LESS, GREAT, EQUAL, LESSE, GREAE, PLUSE, MINUE, TIMEE, DIVIE, INCR, DECR};
 }

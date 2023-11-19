@@ -7,7 +7,11 @@
 std::vector<Class_PN*> classNodes = {};
 std::vector<Token> tokensp;
 
+// Keeps track of the current token the parser is analyzing
 int current = 0;
+
+// To be able to access the token data from outside Type function
+// --While still being able to keep Type function return type as bool
 string currType = "";
 string currText = "";
 
@@ -17,7 +21,7 @@ ParseNode* Parse_Value();
 ParseNode* Parse_Value1();
 ParseNode* Parse_Value2();
 ParseNode* Parse_Value3();
-bool Parse_Body(NodeList*);
+NodeList* Parse_Body();
 void PrintTree();
 
 
@@ -37,23 +41,29 @@ std::vector<Class_PN*> parseTokens (std::vector<Token> p_tokens) {
   return classNodes;
 }
 
+
+
+
+// Returns true if the specified type and text matches the current Token
+// If text for the type checker is unspecified, text is ignored (func below)
 bool Type(string type, string text) {
   Token token = tokensp.at(current);
   bool yes = token.getType() == type;
+  // If no text specified, text ignored
   if (text != "") {
     yes &= token.getText() == text;
   }
 
+  // If token matches, token advances; if not, current token remains
   if (yes) {
     current++;
   }
-  if (text != "") {
-    yes = yes && token.getText() == text;
-  }
+
   std::cout << token.getType() << " " << token.getText() << "\n";
   if (!yes) {
     std::cout << "    expected: " << type << " " << text << "\n";
   }
+
   currType = type;
   currText = text;
   return yes;
@@ -63,6 +73,11 @@ bool Type (string type) {
   return Type(type, "");
 }
 
+
+
+
+
+// Returns a node of the datatype if exists
 ParseNode* Parse_DT() {
   int save = current;
   if (Type(types::NUMBER)) {
@@ -74,17 +89,21 @@ ParseNode* Parse_DT() {
     return nullptr;
   }
   
-  Dual_PN* newNode = new Dual_PN();
+  ParseNode* newNode = new ParseNode();
   newNode->setText(tokensp.at(current-1).getText());
   newNode->setType(tokensp.at(current-1).getType());
   return newNode; 
 }
 
 
+
+
+// PN for data types
 ParseNode* Parse_Value4_1() {
   return Parse_DT();
 }
 
+// PN for (Value)
 ParseNode* Parse_Value4_2() {
   bool yes = Type(types::OPEN);
 
@@ -92,12 +111,15 @@ ParseNode* Parse_Value4_2() {
 
   ParseNode* node = Parse_Value();
 
+  if (node == nullptr) { return nullptr; }
+
   yes = Type(types::CLOSE);
   if (!yes) { return nullptr; }
 
   return node;
 }
 
+// PN for DataTypes or Values in Parenthasis
 ParseNode* Parse_Value4() {
   int save = current;
 
@@ -111,6 +133,9 @@ ParseNode* Parse_Value4() {
   return nullptr;
 }
 
+
+
+// PN for Values next to * or /
 ParseNode* Parse_Value3() {
   int save = current;
 
@@ -138,6 +163,9 @@ ParseNode* Parse_Value3() {
   return newNode;
 }
   
+
+
+// PN for values next to + or -
 ParseNode* Parse_Value2() {
   int save = current;
 
@@ -167,6 +195,8 @@ ParseNode* Parse_Value2() {
 }
 
 
+
+// PN for values next to comparators
 ParseNode* Parse_Value1() {
   int save = current;
 
@@ -201,6 +231,7 @@ ParseNode* Parse_Value1() {
 
 
 
+// PN for values next to && or ||
 ParseNode* Parse_Value() {
   int save = current;
 
@@ -231,121 +262,182 @@ ParseNode* Parse_Value() {
 
 
 
-bool Parse_Class_1(NodeList* body) {
-  return Type(types::KEYW, KW::CLASS) &&
-    Type(types::CLASS) &&
-    Type(types::ENDL) &&
-    Parse_Body(body);
+// PN for an id being set to a value (eg: var1 += 7 * 3)
+ParseNode* Parse_Assignment() {
+  int save = current;
+
+  bool valid = (Type(types::ID) &&
+                (Type(types::EQUAL) || Type(types::EQUALMOD)));
+
+  if (!valid) {
+    current = save;
+    return nullptr;
+  }
+
+  ParseNode* valNode = Parse_Value();
+
+  if (valNode == nullptr) {
+    current = save;
+    return nullptr;
+  }
+
+  ParseNode* idNode = new Dual_PN();
+  idNode->setText(tokensp.at(current-3).getText());
+  idNode->setType(tokensp.at(current-3).getType());
+
+  valNode->setText(tokensp.at(current-1).getText());
+  valNode->setType(tokensp.at(current-1).getType());
+
+  Dual_PN* newNode = new Dual_PN();
+  newNode->setText(tokensp.at(current-2).getText());
+  newNode->setType(tokensp.at(current-2).getType());
+  
+  newNode->setLeft(idNode);
+  newNode->setRight(valNode);
+
+  return newNode;
 }
+
+
+
+// Returns true if a valid class structure is found
+// Adds the class node to the outside list
 bool Parse_Class() {
   int save = current;
 
   NodeList* body = new NodeList();
-  
-  bool yes = Parse_Class_1(body);
 
-  if (!yes) {
+  bool valid = Type(types::KEYW, KW::CLASS) &&
+              Type(types::CLASS) &&
+              Type(types::ENDL);
+
+  if (!valid) {
     current = save + 1;
-  } else {
-    Class_PN* cn = new Class_PN();
-    cn->setType(types::KEYW);
-    cn->setText(KW::CLASS);
-
-    cn->setBody(body);
-    
-    ParseNode* classNode = new ParseNode();
-    classNode->setType(types::CLASS);
-    classNode->setText(tokensp.at(save + 1).getText());
-
-    cn->setClassNode(classNode);
-
-    classNodes.push_back(cn);
+    return false;
   }
-  return yes;
-}
 
-
-
-
-
-bool Parse_Body_1(NodeList* body) {
-
-  bool yes = Type(types::ID) &&
-    Type(types::EQUAL) &&
-    Type(types::NUMBER) &&
-    Type(types::ENDL) &&
-    Parse_Body(body);
-
-  if (yes) {
-    Dual_PN* node = new Dual_PN();
-    node->setType(types::EQUAL);
-    node->setText("=");
-
-    ParseNode* lNode = new ParseNode(types::ID, "", "");
-    ParseNode* rNode = new ParseNode(types::NUMBER, "", "");
-    node->setLeft(lNode);
-    node->setRight(rNode);
-
-    body->addNode(node, 0);
+  NodeList* bodyList = Parse_Body();
+  if (bodyList == nullptr) {
+    current = save + 1;
+    return false;
   }
-  return yes;
+  
+  Class_PN* classNode = new Class_PN();
+  classNode->setType(types::KEYW);
+  classNode->setText(KW::CLASS);
+
+  classNode->setBody(bodyList);
+
+  ParseNode* cNameNode = new ParseNode();
+  cNameNode->setType(types::CLASS);
+  cNameNode->setText(tokensp.at(save + 1).getText());
+
+  classNode->setClassNode(cNameNode);
+
+  classNodes.push_back(classNode);
+
+  return true;
 }
-bool Parse_Body_4(NodeList* body){
 
-  bool yes = Type(types::ID) &&
-    Type(types::EQUAL) &&
-    Type(types::QUOTE) &&
-    Type(types::ENDL) &&
-    Parse_Body(body);
 
-  if (yes) {
-    Dual_PN* node = new Dual_PN();
-    node->setType(types::EQUAL);
-    node->setText("=");
 
-    ParseNode* lNode = new ParseNode(types::ID, "");
-    ParseNode* rNode = new ParseNode(types::QUOTE, "");
-    node->setLeft(lNode);
-    node->setRight(rNode);
 
-    body->addNode(node, 0);
+// PN for assignment lines (eg: var2 = 3 \n)
+ParseNode* Parse_Body_1() {
+  int save = current;
+  
+  ParseNode* asNode = Parse_Assignment();
+  if (asNode == nullptr) {
+    current = save;
+    return nullptr;
   }
-  return yes;
+
+  if (!Type(types::ENDL)) {
+    current = save;
+    return nullptr;
+  }
+
+  return asNode;
 }
-bool Parse_Body_3(NodeList* body) {
-  return Type(types::FUNE);
-}
-bool Parse_Body_2(NodeList* body) {
+
+// PN for lines of a value (eg: 5 * 3 \n)
+ParseNode* Parse_Body_2() {
   int save = current;
 
   ParseNode* node = Parse_Value();
 
   if (node == nullptr) {
     current = save;
-    return false;
+    return nullptr;
   }
-  body->addNode(node);
-  
-  
 
-  return true;
+  if (!Type(types::ENDL)) {
+    current = save;
+    return nullptr;
+  }
+
+  return node;
 }
-bool Parse_Body(NodeList* body) {
+
+// PlaceHolder
+ParseNode* Parse_Body_3() {
+  return nullptr;
+}
+
+
+NodeList* Parse_Body() {
   int save = current;
-  bool yes = (current = save, Parse_Body_1(body)) ||
-    (current = save, Parse_Body_2(body)) ||
-    (current = save, Parse_Body_3(body));
+  
+  NodeList* bodyList = new NodeList();
 
+  bool cont = true;
 
-  return yes;
+  // Will repeat until no new valid body element is found
+  while (cont) {
+    if (Type(types::FUNE)) {
+      break;
+    }
+
+    cont = false;
+
+    // For loop exists so break command wont exit while loop
+    for (int i = 0; i < 1; i++) {
+    //
+
+    ParseNode* nextNode = Parse_Body_1();
+    if (nextNode != nullptr) {
+      bodyList->addNode(nextNode);
+      cont = true;
+      break;
+    }
+
+    nextNode = Parse_Body_2();
+    if (nextNode != nullptr) {
+      bodyList->addNode(nextNode);
+      cont = true;
+      break;
+    }
+
+    nextNode = Parse_Body_3();
+    if (nextNode != nullptr) {
+      bodyList->addNode(nextNode);
+      cont = true;
+      break;
+    }
+
+    // This bracket goes to the for loop
+    }
+    //
+  }
+
+  return bodyList;
 }
 
 
 
 
-
+// Depth first Parse Tree search
 void PrintTree() {
-  //std::cout<< "Thing: " << classNodes.front()->getList()->getNode(0)->getText() << "\n";
   for (int i = 0; i < classNodes.size(); i++) {
     ParseNode* classNode = classNodes.at(i);
     std::vector<ParseNode*> depthList = {classNode};
@@ -356,9 +448,11 @@ void PrintTree() {
     std::cout << classNode->getText() << "\n";
 
     while (depthList.size() != 0) {
-      //std::cout<< "1\n";
+      if (depthList.size() > 30) {
+        std::cout << "----------NODE DEPTH LIMIT REACHED----------\n";
+        return;
+      }
       ParseNode* possibleNext = currentNode->next();
-      //std::cout<< "2 " << currentNode->getText() << "\n";
       if (possibleNext != nullptr) {
         depthList.push_back(currentNode);
         currentNode = possibleNext;

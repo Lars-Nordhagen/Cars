@@ -140,6 +140,12 @@ static string isSyn(char cha, char nextCha) {
     return types::EQUAL;
   }
 
+  for (int i = 0; i < std::size(SYN::SET_ARR); i++) {
+    if (SYN::SET_ARR[i][0] == cha && SYN::SET_ARR[i][1] == nextCha) {
+      return types::EQUALMOD;
+    }
+  }
+
   return "";
 }
 

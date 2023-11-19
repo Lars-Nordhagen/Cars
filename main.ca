@@ -1,4 +1,12 @@
++=
+++=
+= -=
+
+numey = 3
+
 class Main
+
+  numey = 2
   5 + 4 * 4 * (3+   5)
   var = 3
   var2 = "hi"
