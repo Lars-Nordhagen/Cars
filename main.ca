@@ -1,16 +1,11 @@
-+=
-++=
-= -=
-
-numey = 3
+fsdkjahfsdlk
 
 class Main
-
+  var int numey
   numey = 2
-  5 + 4 * 4 * (3+   5)
-  var = 3
-  var2 = "hi"
-  var3 = 43294
+  numey = 5 + 4 * 4 * (3+   5)
+  var bool yes
+  yes = true
 !
 
 class Class1

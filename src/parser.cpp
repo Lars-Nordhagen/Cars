@@ -261,6 +261,36 @@ ParseNode* Parse_Value() {
 }
 
 
+// PN for declaring a variable (eg: var int numberVariable)
+ParseNode* Parse_Declaration() {
+  int save = current;
+
+  bool valid = (Type(types::KEYW, KW::VAR) &&
+                Type(types::TYPE) &&
+                Type(types::ID));
+
+  if (!valid) {
+    current = save;
+    return nullptr;
+  }
+
+  ParseNode* typeNode = new ParseNode();
+  typeNode->setText(tokensp.at(current-3).getText());
+  typeNode->setType(tokensp.at(current-3).getType());
+
+  ParseNode* idNode = new ParseNode();
+  idNode->setText(tokensp.at(current-1).getText());
+  idNode->setType(tokensp.at(current-1).getType());
+
+  Dual_PN* newNode = new Dual_PN();
+  newNode->setText(tokensp.at(current-2).getText());
+  newNode->setType(tokensp.at(current-2).getText());
+
+  newNode->setLeft(typeNode);
+  newNode->setRight(idNode);
+
+  return newNode;
+}
 
 // PN for an id being set to a value (eg: var1 += 7 * 3)
 ParseNode* Parse_Assignment() {
@@ -282,15 +312,12 @@ ParseNode* Parse_Assignment() {
   }
 
   ParseNode* idNode = new Dual_PN();
-  idNode->setText(tokensp.at(current-3).getText());
-  idNode->setType(tokensp.at(current-3).getType());
-
-  valNode->setText(tokensp.at(current-1).getText());
-  valNode->setType(tokensp.at(current-1).getType());
+  idNode->setText(tokensp.at(save).getText());
+  idNode->setType(tokensp.at(save).getType());
 
   Dual_PN* newNode = new Dual_PN();
-  newNode->setText(tokensp.at(current-2).getText());
-  newNode->setType(tokensp.at(current-2).getType());
+  newNode->setText(tokensp.at(save+1).getText());
+  newNode->setType(tokensp.at(save+1).getType());
   
   newNode->setLeft(idNode);
   newNode->setRight(valNode);
@@ -351,17 +378,21 @@ ParseNode* Parse_Body_1() {
     current = save;
     return nullptr;
   }
+  std::cout << "---------Valid Assignment\n";
 
   if (!Type(types::ENDL)) {
     current = save;
     return nullptr;
   }
+  std::cout << "---------Valid ENDL\n";
 
   return asNode;
 }
 
 // PN for lines of a value (eg: 5 * 3 \n)
 ParseNode* Parse_Body_2() {
+  return nullptr;
+
   int save = current;
 
   ParseNode* node = Parse_Value();
@@ -382,6 +413,21 @@ ParseNode* Parse_Body_2() {
 // PlaceHolder
 ParseNode* Parse_Body_3() {
   return nullptr;
+  int save = current;
+
+  ParseNode* node = Parse_Declaration();
+
+  if (node == nullptr) {
+    current = save;
+    return nullptr;
+  }
+
+  if (!Type(types::ENDL)) {
+    current = save;
+    return nullptr;
+  }
+
+  return node;
 }
 
 

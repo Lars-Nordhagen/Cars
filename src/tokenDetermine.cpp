@@ -121,6 +121,13 @@ static bool isClass(string str, std::unordered_set<string> classSet) {
 
   return false;
 }
+static bool isType(string str, std::unordered_set<string> typeSet) {
+  if (typeSet.find(str) != typeSet.end()) {
+    return true;
+  }
+
+  return false;
+}
 
 static string isSyn(char cha, char nextCha) {
   // Checks if the char is a syntax char

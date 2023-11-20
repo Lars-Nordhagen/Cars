@@ -10,6 +10,7 @@
 std::vector<Token> tokens = {};
 std::unordered_set<string> keywords;
 std::unordered_set<string> classes;
+std::unordered_set<string> typesUS;
 
 // Adds a token to the list
 void sendToken(std::string type, std::string text) {
@@ -75,6 +76,8 @@ void lexLine(string line) {
         sendToken(types::KEYW, text);
       } else if (isClass(text, classes)) {
         sendToken(types::CLASS, text);
+      } else if (isType(text, typesUS)) {
+        sendToken(types::TYPE, text);
       } else {
         sendToken(types::ID, text);
       }
@@ -118,6 +121,7 @@ std::vector<Token> lexFile(string fileName) {
   std::string line;
   keywords = {KW::FOR, KW::IF, KW::ELSE, KW::WHILE, KW::ELSE, KW::CLASS, KW::INCLUDE, KW::NEW, KW::CONST, KW::PACKAGE};
   classes = {"Main", "int", "bool", "double", "char", "Class1", "Class2", "Class3"};
+  typesUS = {SYN::INT, SYN::BOOL, SYN::DOUBLE, SYN::CHAR};
 
   // Lexes each line
   while (std::getline(file, line)) {

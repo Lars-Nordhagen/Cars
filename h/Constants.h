@@ -15,6 +15,7 @@ namespace types {
   const string CLASS = "CLSS";
   const string FUNE = "FUNE";
   const string ENDL = "ENDL";
+  const string TYPE = "TYPE";
 
   const string OPEN = "OPEN";
   const string CLOSE = "CLOS";
@@ -34,13 +35,14 @@ namespace KW {
 
   const string CLASS = "class";
   const string FUNC = "func";
+  const string VAR = "var";
 
   const string INCLUDE = "include";
   const string NEW = "new";
   const string CONST = "const";
   const string PACKAGE = "package";
 
-  const string KW_ARR[] = {FOR, IF, ELSE, WHILE, CLASS, FUNC, INCLUDE, NEW, CONST, PACKAGE};
+  const string KW_ARR[] = {FOR, IF, ELSE, WHILE, CLASS, FUNC, VAR, INCLUDE, NEW, CONST, PACKAGE};
 }
 
 namespace SYN {
@@ -79,6 +81,12 @@ namespace SYN {
   const string SET_ARR[] = {PLUSE, MINUE, TIMEE, DIVIE};
 
   const string OPP_ARR[] = {PLUS, MINUS, TIMES, DIVIDE, AND, OR, LESS, GREAT, EQUAL, LESSE, GREAE, PLUSE, MINUE, TIMEE, DIVIE, INCR, DECR};
+  
+
+  const string INT = "int";
+  const string BOOL = "bool";
+  const string CHAR = "char";
+  const string DOUBLE = "double";
 }
 
 #endif // CONST_H
